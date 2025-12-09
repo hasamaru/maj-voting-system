@@ -11,9 +11,11 @@ import { EmailModal } from './EmailModal';
 interface VotingTableProps {
     data: Voter[];
     onUpdateStatus: (ids: string[], status: VotingStatus) => void;
+    onUpdateEmail?: (id: string, email: string) => void;
+    isAdmin?: boolean;
 }
 
-export function VotingTable({ data, onUpdateStatus }: VotingTableProps) {
+export function VotingTable({ data, onUpdateStatus, onUpdateEmail, isAdmin = false }: VotingTableProps) {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [modalVoters, setModalVoters] = useState<Voter[]>([]);
@@ -81,7 +83,11 @@ export function VotingTable({ data, onUpdateStatus }: VotingTableProps) {
                     )}
                 </div>
                 <div className="flex space-x-2">
-                    {/* Additional filters could go here */}
+                    {isAdmin && (
+                        <button className="px-3 py-1.5 bg-zinc-800 text-white text-xs font-medium rounded-md hover:bg-zinc-700 transition-colors flex items-center gap-2 shadow-sm">
+                            <span className="text-xs">CSVインポート</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -134,14 +140,23 @@ export function VotingTable({ data, onUpdateStatus }: VotingTableProps) {
                                     </span>
                                 </td>
                                 <td className="p-4">
-                                    {row.email ? (
-                                        <div className="text-sm text-zinc-600">{row.email}</div>
-                                    ) : (
-                                        <div className="flex items-center text-red-500 text-xs font-medium">
-                                            <AlertTriangle className="w-3 h-3 mr-1" />
-                                            未入力
-                                        </div>
-                                    )}
+                                    <div className="relative group/email">
+                                        <input
+                                            type="email"
+                                            value={row.email}
+                                            onChange={(e) => onUpdateEmail?.(row.id, e.target.value)}
+                                            placeholder="メールアドレスを入力"
+                                            className={cn(
+                                                "w-full bg-transparent border-0 border-b border-transparent focus:border-red-500 focus:ring-0 px-0 py-1 text-sm text-zinc-600 placeholder:text-red-300 transition-colors",
+                                                !row.email && "border-red-300"
+                                            )}
+                                        />
+                                        {!row.email && (
+                                            <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                <AlertTriangle className="w-4 h-4 text-red-500" />
+                                            </div>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="p-4">
                                     <div className="flex items-center space-x-2 group/id">

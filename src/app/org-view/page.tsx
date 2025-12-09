@@ -21,6 +21,12 @@ export default function OrgView() {
         );
     };
 
+    const handleUpdateEmail = (id: string, newEmail: string) => {
+        setVoters(current =>
+            current.map(v => v.id === id ? { ...v, email: newEmail } : v)
+        );
+    };
+
     return (
         <div className="flex h-screen bg-zinc-50 font-sans text-zinc-900">
             <Sidebar />
@@ -39,8 +45,8 @@ export default function OrgView() {
                                     key={org}
                                     onClick={() => setSelectedOrg(org)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedOrg === org
-                                            ? 'bg-red-600 text-white shadow-md shadow-red-200'
-                                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                        ? 'bg-red-600 text-white shadow-md shadow-red-200'
+                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                                         }`}
                                 >
                                     {org}
@@ -53,7 +59,12 @@ export default function OrgView() {
 
                     <div className="flex flex-col h-[600px]">
                         <h2 className="text-lg font-semibold text-zinc-800 mb-4">会員リスト & 投票ID管理</h2>
-                        <VotingTable data={filteredData} onUpdateStatus={handleUpdateStatus} />
+                        <VotingTable
+                            data={filteredData}
+                            onUpdateStatus={handleUpdateStatus}
+                            onUpdateEmail={handleUpdateEmail}
+                            isAdmin={selectedOrg === 'RIAJ'} // Demo: RIAJ allows admin features just for show? Or keep it false.
+                        />
                     </div>
                 </main>
             </div>
